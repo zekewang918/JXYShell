@@ -2,11 +2,19 @@ JXYShell
 ========
 
 Team Member:
-Jingjing Tang
-Xike Wang
-Yang Yang
-
-Job Division:
-Jingjing Tang --> History
-Xike Wang --> Piping
-Yang Yang --> Redirection
+------------
+<ul>
+<li>Jingjing Tang</li>
+<li>Xike Wang</li>
+<li>Yang Yang</li>
+</ul>
+<br />
+Shell Functionality:
+-------------------
+<ol>
+<li>Piping</li>
+<li>Histor<b/li>
+<li>Redirection</li>
+<li>Tab Completion</li>
+</ol>
+<br />
