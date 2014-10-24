@@ -4,6 +4,7 @@
 #include <strings.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <limits.h>
 
 #define FAILURE 1
 #define SUCCESS 0
@@ -15,8 +16,10 @@ main(int argc, char *argv[])
 {
   char* cmdLine;
   int stop = 0;
+  char buff[PATH_MAX + 1];
+  char* cwd = getcwd(buff, PATH_MAX+  1);
   while(!stop){
-    printf("JXYShell$");
+    printf("JXYShell$ %s:", cwd);
     cmdLine = readline("> ");
     int rc = fork();
     if (!strcmp(cmdLine, "exit")){
@@ -26,7 +29,6 @@ main(int argc, char *argv[])
       fprintf(stderr, "Fork Failed\n");
       exit(FAILURE);
     }else if (rc == 0){
-      
       executeCommand(cmdLine);
       exit(FAILURE);
     }else{
@@ -37,11 +39,11 @@ main(int argc, char *argv[])
   return SUCCESS;
 }
 void executeCommand(char * cmd){
-  
+  char *commend = strtok(cmd," ");
   char* arg[] = {cmd, NULL};
   execvp(arg[0],arg);
   printf("%s\n", cmd);
-  //system(cmd);
+  system(cmd);
 }
 
 
