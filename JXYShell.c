@@ -8,21 +8,27 @@
 #define FAILURE 1
 #define SUCCESS 0
 
+void executeCommand(char* cmd);
+
 int 
 main(int argc, char *argv[])
 {
   char* cmdLine;
-  while(1){
+  int stop = 0;
+  while(!stop){
     printf("JXYShell$");
     cmdLine = readline("> ");
-    if (!strcmp(cmdLine, "exit")){
-      exit(SUCCESS);
-    }
     int rc = fork();
+    if (!strcmp(cmdLine, "exit")){
+     exit(SUCCESS);
+  }
     if (rc < 0){
       fprintf(stderr, "Fork Failed\n");
       exit(FAILURE);
     }else if (rc == 0){
+      
+      executeCommand(cmdLine);
+      exit(FAILURE);
     }else{
       wait(NULL);
     }
@@ -30,6 +36,15 @@ main(int argc, char *argv[])
   }
   return SUCCESS;
 }
+void executeCommand(char * cmd){
+  
+  char* arg[] = {cmd, NULL};
+  execvp(arg[0],arg);
+  printf("%s\n", cmd);
+  //system(cmd);
+}
+
+
 void piping(){
 
 }
