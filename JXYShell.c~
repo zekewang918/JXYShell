@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <system.h>
 
 #define failure 1
 #define success 0
