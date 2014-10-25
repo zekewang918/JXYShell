@@ -22,6 +22,7 @@ int executeCommand(char* cmd);
 char* divideString(char* cmd);
 int piping(char* cmd);
 void history(char* command);
+void printHistory();
 
 struct commend
 {
@@ -64,7 +65,9 @@ int executeCommand(char * cmd){
   int num = piping(cmd);
   int i;
   for (i = 0;i<num;i++){
-    if (system(commend_line.cmd[i]) == -1){
+    if (strcmp(commend_line.cmd[i], "history") == 0){
+      printHistory();
+    }else if (system(commend_line.cmd[i]) == -1){
       return 0;
     }
   }
@@ -92,13 +95,20 @@ void redirection(){
 
 }
 
+void printHistory(){
+  int i;
+  for (i = 0; i < history_count; i++){
+    printf("%d\t%s\n", i, history_list[i]);
+  }
+}
+
 void history(char* command){
   int i;
   //printf("%s",command);
   if (history_count < HISTORY_MAX_SIZE){
     //strcpy(history_list[history_count],command);
     history_list[history_count++] = strdup(command);
-    printf("%s",history_list[history_count-1]);
+    //printf("%s",history_list[history_count-1]);
     //history_count++;
   }else{
     free(history_list[0]);
