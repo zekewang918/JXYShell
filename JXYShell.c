@@ -14,7 +14,7 @@
 #define COMMAND_LENGTH 512
 #define MAX_COMMEND 512
 
-void executeCommand(char* cmd);
+int executeCommand(char* cmd);
 char* divideString(char* cmd);
 int piping(char* cmd);
 
@@ -27,56 +27,58 @@ int
 main(int argc, char *argv[])
 {
   char* cmdLine;
-  int stop = 2;
+  int stop = 0;
   //char buff[PATH_MAX + 1];
   //char* cwd = getcwd(buff, PATH_MAX+  1);
-  while(stop){
+  while(!stop){
     printf("JXYShell$ -");
     cmdLine = readline("> ");
     //char* const args[] = {cmdLine,NULL};
-    //printf("%s123", cmdLine);
-    
+    printf("123");
     if (!strcmp(cmdLine, "exit")){
       exit(SUCCESS);
     }
-    if (system(cmdLine) != -1){
-      //system(cmdLine);
+    if (cmdLine != NULL){
+      executeCommand(cmdLine);
     }else{
       int rc = fork();
-    if (rc < 0){
-      fprintf(stderr, "Fork Failed\n");
-      exit(FAILURE);
-    }else if (rc == 0){
-      printf("IM CHILD");
-      //system(cmdLine);
-      //char *myargs[3];
-      //myargs[0] = strd
-      char* arg[] = {strdup("ls"), NULL};
-      execvp(arg[0],arg);
-      //executeCommand(cmdLine);
-    }else{
-      int wc = wait(NULL);
-      printf("IM DADDY%d", wc);
-    }
-    stop--;
+      if (rc < 0){
+        fprintf(stderr, "Fork Failed\n");
+        exit(FAILURE);
+      }else if (rc == 0){
+        printf("IM CHILD");
+        //system(cmdLine);
+        //char *myargs[3];
+        //myargs[0] = strd
+        char* arg[] = {strdup("ls"), NULL};
+        execvp(arg[0],arg);
+        //executeCommand(cmdLine);
+      }else{
+        int wc = wait(NULL);
+        printf("IM DADDY%d", wc);
+      }
     }
   }
   return SUCCESS;
 }
-void executeCommand(char * cmd){
-  printf("CMD:%s", cmd);
+int executeCommand(char * cmd){
+  printf("CMD:");
+
   int num = piping(cmd);
   printf("NUMBER: %d",num);
   int i;
   for (i = 0;i<num;i++){
     //printf("%s", commend_line.cmd[i]);
-    system(commend_line.cmd[i]);
+    if (system(commend_line.cmd[i]) == -1){
+      return 0;
+    }
   }
-  char* arg[] = {cmd, NULL};
-  execvp(arg[0],arg);
+  //char* arg[] = {cmd, NULL};
+  //execvp(arg[0],arg);
   //printf("%s\n", cmd);
   //system(cmd);
   //exit(FAILURE);
+  return 1;
 }
 
 /*char* divideString(char* cmd){
@@ -85,7 +87,6 @@ void executeCommand(char * cmd){
 
 
 int piping(char* cmd){
-  //char commend[MAX_COMMEND][COMMAND_LENGTH+1];
   char divide[2] = "|";
   char* token;
   int index = 0;
@@ -94,6 +95,7 @@ int piping(char* cmd){
     strcpy(commend_line.cmd[index], token);
     printf("%s", commend_line.cmd[index]);
     index++;
+    token = strtok(NULL, divide);
   }
   return index;
 }
@@ -109,3 +111,15 @@ void redirection(){
 void history(){
 
 }
+
+/* BACKUP CODE JUST IN CASE
+// BACKUP of CORRECT PIPE
+      /*char divide[2] = "|";
+      char* token;
+      token = strtok(cmdLine, divide);
+      while(token != NULL){
+        system(token);
+        token = strtok(NULL, divide);
+        
+      }*/
+
