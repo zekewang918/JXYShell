@@ -18,3 +18,9 @@ Shell Functionality:
 <li>Tab Completion</li>
 </ol>
 <br />
+Install
+---------
+gcc -Wall -lreadline -o JXYShell JXYShell.c
+How to use
+----------
+./JXYShell
