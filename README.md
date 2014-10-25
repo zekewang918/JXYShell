@@ -22,5 +22,7 @@ Install
 ---------
 gcc -Wall -lreadline -o JXYShell JXYShell.c
 How to use
+<br />
 ----------
 ./JXYShell
+<br />
