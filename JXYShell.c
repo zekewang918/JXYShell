@@ -27,17 +27,22 @@ int
 main(int argc, char *argv[])
 {
   char* cmdLine;
-  int stop = 0;
+  int stop = 2;
   //char buff[PATH_MAX + 1];
   //char* cwd = getcwd(buff, PATH_MAX+  1);
-  while(!stop){
+  while(stop){
     printf("JXYShell$ -");
     cmdLine = readline("> ");
+    //char* const args[] = {cmdLine,NULL};
     //printf("%s123", cmdLine);
-    int rc = fork();
+    
     if (!strcmp(cmdLine, "exit")){
       exit(SUCCESS);
     }
+    if (system(cmdLine) != -1){
+      //system(cmdLine);
+    }else{
+      int rc = fork();
     if (rc < 0){
       fprintf(stderr, "Fork Failed\n");
       exit(FAILURE);
@@ -46,12 +51,15 @@ main(int argc, char *argv[])
       //system(cmdLine);
       //char *myargs[3];
       //myargs[0] = strd
-      executeCommand(cmdLine);
+      char* arg[] = {strdup("ls"), NULL};
+      execvp(arg[0],arg);
+      //executeCommand(cmdLine);
     }else{
       int wc = wait(NULL);
       printf("IM DADDY%d", wc);
     }
-
+    stop--;
+    }
   }
   return SUCCESS;
 }
