@@ -5,6 +5,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <limits.h>
+#include <sys/wait.h>
+
 
 #define FAILURE 1
 #define SUCCESS 0
@@ -14,52 +16,67 @@
 
 void executeCommand(char* cmd);
 char* divideString(char* cmd);
-struct commend piping(char* cmd);
+int piping(char* cmd);
+
+struct commend
+{
+  char cmd[MAX_COMMEND][COMMAND_LENGTH+1];
+}commend_line;
 
 int 
 main(int argc, char *argv[])
 {
   char* cmdLine;
   int stop = 0;
-  char buff[PATH_MAX + 1];
-  char* cwd = getcwd(buff, PATH_MAX+  1);
+  //char buff[PATH_MAX + 1];
+  //char* cwd = getcwd(buff, PATH_MAX+  1);
   while(!stop){
-    printf("JXYShell$ %s:", cwd);
+    printf("JXYShell$ -");
     cmdLine = readline("> ");
+    //printf("%s123", cmdLine);
     int rc = fork();
     if (!strcmp(cmdLine, "exit")){
-     exit(SUCCESS);
+      exit(SUCCESS);
     }
     if (rc < 0){
       fprintf(stderr, "Fork Failed\n");
       exit(FAILURE);
     }else if (rc == 0){
+      printf("IM CHILD");
+      //system(cmdLine);
+      //char *myargs[3];
+      //myargs[0] = strd
       executeCommand(cmdLine);
-      exit(FAILURE);
     }else{
-      wait(NULL);
+      int wc = wait(NULL);
+      printf("IM DADDY%d", wc);
     }
 
   }
   return SUCCESS;
 }
 void executeCommand(char * cmd){
-  //char** commend = piping(cmd);
+  printf("CMD:%s", cmd);
+  int num = piping(cmd);
+  printf("NUMBER: %d",num);
+  int i;
+  for (i = 0;i<num;i++){
+    //printf("%s", commend_line.cmd[i]);
+    system(commend_line.cmd[i]);
+  }
   char* arg[] = {cmd, NULL};
   execvp(arg[0],arg);
-  printf("%s\n", cmd);
+  //printf("%s\n", cmd);
   //system(cmd);
+  //exit(FAILURE);
 }
 
 /*char* divideString(char* cmd){
 
 }*/
-struct commend
-{
-  char cmd[MAX_COMMEND][COMMAND_LENGTH+1];
-}commend_line;
 
-struct commend piping(char* cmd){
+
+int piping(char* cmd){
   //char commend[MAX_COMMEND][COMMAND_LENGTH+1];
   char divide[2] = "|";
   char* token;
@@ -70,7 +87,7 @@ struct commend piping(char* cmd){
     printf("%s", commend_line.cmd[index]);
     index++;
   }
-  return commend_line;
+  return index;
 }
 
 void tabCompletion(){
