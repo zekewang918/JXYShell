@@ -1,3 +1,13 @@
+/* * * * * * * * * * * * * * * 
+ * JXY SHELL                 *
+ *                           *
+ * A Simple Shell            *
+ *                           *
+ * Authors: Jingjing Tang    *
+ *          Xike Wang        *
+ *          Yang Yang        *
+ *****************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -87,6 +97,7 @@ int piping(char* cmd){
   return index;
 }
 
+
 void tabCompletion(){
 
 }
@@ -119,58 +130,4 @@ void history(char* command){
     history_list[HISTORY_MAX_SIZE-1] = strdup(command);
   }
 
-
-  /*int length,
-      i,
-      start,
-      ct;
-  ct = 0;
-  length = read(STDIN_FILENO, inputBuffer, COMMAND_LENGTH+1);
-  start = -1;
-  
-  printf(">>%s<<", inputBuffer);
-  for (i = 0; i < length; i++){
-    switch (inputBuffer[i]){
-      case ' ':
-      case '\t':
-        if (start != -1){
-          args[ct] = &inputBuffer[start];
-          ct++;
-        }
-        inputBuffer[i] = '\0';
-        start = -1;
-        break;
-      case '\n':
-        if (start != -1){
-          args[ct] = &inputBuffer[start];
-          ct++;
-        }
-        inputBuffer[i] = '\0';
-        args[ct] = NULL;
-        break;
-      default:
-        if (start == -1)
-          start = i;
-        if (inputBuffer[i] == '&'){
-          *background = 1;
-          inputBuffer[i-1] = '\0';
-        }
-    }
-    args[ct] = NULL;
-    for (i = 0; i <= ct; i++){
-      printf("args %d = %s\n", i, args[i]);
-    }
-  }*/
 }
-
-/* BACKUP CODE JUST IN CASE
-// BACKUP of CORRECT PIPE
-      char divide[2] = "|";
-      char* token;
-      token = strtok(cmdLine, divide);
-      while(token != NULL){
-        system(token);
-        token = strtok(NULL, divide);
-        
-      }*/
-
