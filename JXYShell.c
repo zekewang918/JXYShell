@@ -47,21 +47,8 @@ main(void)
     printf("JXYShell$ -");
     cmdLine = readline("> ");
     history(cmdLine);
-    //scanf("%s", cmdLine);
-    //printf("%s",cmdLine);
-    //int num = piping(cmdLine);
-    //printf("NUM:%d ", num);
-    //parse(cmdLine);
     executeCommand(piping(cmdLine));
-    //if (!strcmp(cmdLine, "exit")){
-    //  exit(SUCCESS);
-    //}
-    /*if (cmdLine != NULL){
-      history(cmdLine);
-      executeCommand(cmdLine);
-    }else{*/
-      
-    //}
+
   }
   return SUCCESS;
 }
@@ -75,36 +62,19 @@ void executeCommand(int num){
   char *argv[64];
   
   for (i = 0;i<num;i++){
-    //printf("%s", commend_line.cmd[i]);
     parse(commend_line.cmd[i], argv);
-    //printf("%s",argv[0]);
-    //printf("%s",argv[1]);
-    /*if (strcmp(commend_line.cmd[i], "history") == 0){
-      //printHistory();
-    }else if (execvp(*argv, argv) == -1){
-    }*/
   }
 
 
   int rc = fork();
-      //printf("%d", rc);
       if (rc < 0){
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
       }else if (rc == 0){
-        //printf("IM CHILD");
         execvp(*argv, argv);
       }else{
-        //printf("I WILL WAIT");
         wait(NULL);
-        //printf("IM DADDY");
       }
-  
-  
-  
-  //char line[COMMAND_LENGTH];
-
-  
 }
 
 int piping(char* cmd){
@@ -113,27 +83,25 @@ int piping(char* cmd){
   int index = 0;
   token = strtok(cmd, divide);
   while(token != NULL){
-    //printf("%s", token);
     strcpy(commend_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
   }
-  //strcpy(commend_line.cmd[index], NULL);
   return index;
 }
 
 
 void  parse(char *line, char **argv)
 {
-     while (*line != '\0') {       /* if not the end of line ....... */ 
+     while (*line != '\0') {       
           while (*line == ' ' || *line == '\t' || *line == '\n')
-               *line++ = '\0';     /* replace white spaces with 0    */
-          *argv++ = line;          /* save the argument position     */
+               *line++ = '\0';     
+          *argv++ = line;          
           while (*line != '\0' && *line != ' ' && 
                  *line != '\t' && *line != '\n') 
-               line++;             /* skip the argument until ...    */
+               line++;             
      }
-     *argv = (char *) '\0';                 /* mark the end of argument list  */
+     *argv = (char *) '\0';                
 }
 
 
@@ -151,12 +119,9 @@ void printHistory(){
 
 void history(char* command){
   int i;
-  //printf("%s",command);
+
   if (history_count < HISTORY_MAX_SIZE){
-    //strcpy(history_list[history_count],command);
     history_list[history_count++] = strdup(command);
-    //printf("%s",history_list[history_count-1]);
-    //history_count++;
   }else{
     free(history_list[0]);
     for (i = 1; i < HISTORY_MAX_SIZE; i++){
