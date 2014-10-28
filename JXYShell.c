@@ -28,14 +28,11 @@ static char* history_list[HISTORY_MAX_SIZE];
 static int history_count = 0;
 
 void executeCommand(int num);
-char* divideString(char* cmd);
 int piping(char* cmd);
 void history(char* command);
 void printHistory();
 void parse(char* line, char** argc);
-void execute(char **argv);
-
-
+void isBuiltIn(char* cmd);
 
 
 int 
@@ -47,6 +44,7 @@ main(void)
     printf("JXYShell$ -");
     cmdLine = readline("> ");
     history(cmdLine);
+    isBuiltIn(cmdLine);
     executeCommand(piping(cmdLine));
 
   }
@@ -106,10 +104,6 @@ void  parse(char *line, char **argv)
 
 
 
-void redirection(){
-
-}
-
 void printHistory(){
   int i;
   for (i = 0; i < history_count; i++){
@@ -130,5 +124,12 @@ void history(char* command){
     strcpy(history_list[HISTORY_MAX_SIZE-1], command);
     history_list[HISTORY_MAX_SIZE-1] = strdup(command);
   }
-
 }
+void isBuiltIn(char* cmd){
+  if (strcmp(cmd, "history") == 0){
+    printHistory();
+  }else if (strcmp(cmd, "exit") == 0){
+    exit(SUCCESS);
+  }
+}
+
