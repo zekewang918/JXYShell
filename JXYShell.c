@@ -14,22 +14,20 @@
 #include <strings.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <limits.h>
 #include <sys/wait.h>
-#include <sys/types.h>
 
 
 #define FAILURE 1
 #define SUCCESS 0
 
-#define COMMAND_LENGTH 512
-#define MAX_COMMEND 512
+#define COMMAND_LENGTH 16
+#define MAX_COMMEND 64
 #define HISTORY_MAX_SIZE 100
 
 static char* history_list[HISTORY_MAX_SIZE];
 static int history_count = 0;
 
-int executeCommand(char* cmd);
+void executeCommand(int num);
 char* divideString(char* cmd);
 int piping(char* cmd);
 void history(char* command);
@@ -38,60 +36,91 @@ void parse(char* line, char** argc);
 void execute(char **argv);
 
 
-struct commend
-{
-  char cmd[MAX_COMMEND][COMMAND_LENGTH];
-}commend_line;
+
 
 int 
-main(int argc, char *argv[])
+main(void)
 {
   char* cmdLine;
-  int status;
-  int stop = 0;
-
-  while(!stop){
+  while(1){
+    
     printf("JXYShell$ -");
     cmdLine = readline("> ");
-    
-    if (!strcmp(cmdLine, "exit")){
-      exit(SUCCESS);
-    }
+    //scanf("%s", cmdLine);
+    //printf("%s",cmdLine);
+    //int num = piping(cmdLine);
+    //printf("NUM:%d ", num);
+    //parse(cmdLine);
+    executeCommand(piping(cmdLine));
+    //if (!strcmp(cmdLine, "exit")){
+    //  exit(SUCCESS);
+    //}
     /*if (cmdLine != NULL){
       history(cmdLine);
       executeCommand(cmdLine);
     }else{*/
-      pid_t rc = fork();
-      if (rc < 0){
-        fprintf(stderr, "Fork Failed\n");
-        exit(FAILURE);
-      }else if (rc == 0){
-        printf("IM CHILD");
-        executeCommand(cmdLine);
-      }else{
-        int wc = wait(&status);
-        printf("IM DADDY%d", wc);
-      }
+      
     //}
   }
   return SUCCESS;
 }
-int executeCommand(char * cmd){
-  int num = piping(cmd);
+struct commend
+{
+  char cmd[MAX_COMMEND][COMMAND_LENGTH+1];
+}commend_line;
+
+void executeCommand(int num){
   int i;
-  //char line[COMMAND_LENGTH];
   char *argv[64];
   
   for (i = 0;i<num;i++){
+    //printf("%s", commend_line.cmd[i]);
     parse(commend_line.cmd[i], argv);
-    if (strcmp(commend_line.cmd[i], "history") == 0){
-      printHistory();
+    //printf("%s",argv[0]);
+    //printf("%s",argv[1]);
+    /*if (strcmp(commend_line.cmd[i], "history") == 0){
+      //printHistory();
     }else if (execvp(*argv, argv) == -1){
-      return 0;
-    }
+    }*/
   }
-  return 1;
+
+
+  int rc = fork();
+      //printf("%d", rc);
+      if (rc < 0){
+        fprintf(stderr, "Fork Failed\n");
+        exit(FAILURE);
+      }else if (rc == 0){
+        //printf("IM CHILD");
+        execvp(*argv, argv);
+      }else{
+        //printf("I WILL WAIT");
+        wait(NULL);
+        //printf("IM DADDY");
+      }
+  
+  
+  
+  //char line[COMMAND_LENGTH];
+
+  
 }
+
+int piping(char* cmd){
+  char divide[2] = "|";
+  char* token;
+  int index = 0;
+  token = strtok(cmd, divide);
+  while(token != NULL){
+    //printf("%s", token);
+    strcpy(commend_line.cmd[index], token);
+    index++;
+    token = strtok(NULL, divide);
+  }
+  //strcpy(commend_line.cmd[index], NULL);
+  return index;
+}
+
 
 void  parse(char *line, char **argv)
 {
@@ -103,27 +132,10 @@ void  parse(char *line, char **argv)
                  *line != '\t' && *line != '\n') 
                line++;             /* skip the argument until ...    */
      }
-     *argv = NULL;                 /* mark the end of argument list  */
-}
-
-int piping(char* cmd){
-  char divide[2] = "|";
-  char* token;
-  int index = 0;
-  token = strtok(cmd, divide);
-  while(token != NULL){
-    strcpy(commend_line.cmd[index], token);
-    index++;
-    token = strtok(NULL, divide);
-  }
-  strcpy(commend_line.cmd[index], NULL);
-  return index;
+     *argv = (char *) '\0';                 /* mark the end of argument list  */
 }
 
 
-void tabCompletion(){
-
-}
 
 void redirection(){
 
