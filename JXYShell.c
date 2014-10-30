@@ -55,7 +55,7 @@ int piping(char* cmd);
 void history(char* command);
 void printHistory();
 void parse(char* line, char** argc);
-void isBuiltIn(char* cmd);
+int isBuiltIn(char* cmd);
 
 /*
  * Struct a 2D-array that stores the commands
@@ -66,6 +66,11 @@ struct commend
   char cmd[MAX_COMMEND][COMMAND_LENGTH+1];
 }commend_line;
 
+struct output
+{
+  char output[MAX_COMMEND][COMMAND_LENGTH+1];
+}output_buffer;
+
 /*
  * Function that execute program by using fork() and execvp()
  */
@@ -73,10 +78,14 @@ struct commend
 void executeCommand(int num){
   int i;
   char *argv[64];
-  
+  //for (i = 0; i< num; i++){
+  //printf("%s == ", commend_line.cmd[i]);}
+  //printf("%d", num);
   for (i = 0;i<num;i++){
     parse(commend_line.cmd[i], argv);
-  }
+    //printf("%s - -! ", *argv);
+   
+  
 
 
   int rc = fork();
@@ -84,10 +93,11 @@ void executeCommand(int num){
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
       }else if (rc == 0){
-        execvp(*argv, argv);
+        execvp(argv[0], argv);
       }else{
         wait(NULL);
       }
+  }
 }
 
 /*
@@ -99,7 +109,9 @@ int piping(char* cmd){
   char* token;
   int index = 0;
   token = strtok(cmd, divide);
+
   while(token != NULL){
+    //printf("%s---", token);
     strcpy(commend_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
@@ -116,12 +128,13 @@ void  parse(char *line, char **argv)
      while (*line != '\0') {       
           while (*line == ' ' || *line == '\t' || *line == '\n')
                *line++ = '\0';     
-          *argv++ = line;          
+            *argv++ = line;          
           while (*line != '\0' && *line != ' ' && 
                  *line != '\t' && *line != '\n') 
-               line++;             
+            line++;   
+          //printf("%s",*argv);          
      }
-     *argv = (char *) '\0';                
+     *argv = (char*) '\0';                
 }
 
 /*
@@ -159,12 +172,14 @@ void history(char* command){
  * If it does then run it by functions provided in this program
  */
 
-void isBuiltIn(char* cmd){
+int isBuiltIn(char* cmd){
   if (strcmp(cmd, "history") == 0){
     printHistory();
+    return 0;
   }else if (strcmp(cmd, "exit") == 0){
-    exit(SUCCESS);
+    exit(SUCCESS); 
   }
+  return 1;
 }
 
 /*
@@ -182,8 +197,9 @@ main(void)
     printf("JXYShell$ -");
     cmdLine = readline("> ");
     history(cmdLine);
-    isBuiltIn(cmdLine);
-    executeCommand(piping(cmdLine));
+    if (isBuiltIn(cmdLine)){
+      executeCommand(piping(cmdLine));
+    }
 
   }
   return SUCCESS;
