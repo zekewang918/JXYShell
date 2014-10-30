@@ -18,8 +18,8 @@
 
 /*
  * Define Staus of exit program
- * FAILURE - 1   
- * SUCCESS 0
+ * FAILURE: 1   
+ * SUCCESS: 0
  */
 
 #define FAILURE 1
@@ -28,9 +28,9 @@
 /*
  * Define the length of command, max number of command, and 
  * history's size
- * Length of command - 16
- * Max number of command - 64
- * History's size - 100
+ * Length of command: 16
+ * Max number of command: 64
+ * History's size: 100
  */
 
 
