@@ -1,7 +1,7 @@
 JXYShell
 ========
 
-Team Member:
+Team Member
 ------------
 <ul>
 <li>Jingjing Tang</li>
@@ -9,7 +9,7 @@ Team Member:
 <li>Yang Yang</li>
 </ul>
 <br />
-Shell Functionality:
+Shell Functionality
 -------------------
 <ol>
 <li>Piping</li>
@@ -20,9 +20,10 @@ Shell Functionality:
 <br />
 Install
 ---------
+How to compile:
 gcc -Wall -lreadline -o JXYShell JXYShell.c
-How to use
 <br />
+Run
 ----------
 ./JXYShell
 <br />
