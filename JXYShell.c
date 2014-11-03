@@ -35,7 +35,7 @@
 
 
 #define COMMAND_LENGTH 16
-#define MAX_COMMEND 64
+#define MAX_COMMAND 64
 #define HISTORY_MAX_SIZE 100
 
 /*
@@ -61,14 +61,14 @@ int isBuiltIn(char* cmd);
  * Struct a 2D-array that stores the commands
  */
 
-struct commend
+struct command
 {
-  char cmd[MAX_COMMEND][COMMAND_LENGTH+1];
-}commend_line;
+  char cmd[MAX_COMMAND][COMMAND_LENGTH+1];
+}command_line;
 
 struct output
 {
-  char output[MAX_COMMEND][COMMAND_LENGTH+1];
+  char output[MAX_COMMAND][COMMAND_LENGTH+1];
 }output_buffer;
 
 /*
@@ -79,10 +79,10 @@ void executeCommand(int num){
   int i;
   char *argv[64];
   //for (i = 0; i< num; i++){
-  //printf("%s == ", commend_line.cmd[i]);}
+  //printf("%s == ", command_line.cmd[i]);}
   //printf("%d", num);
   for (i = 0;i<num;i++){
-    parse(commend_line.cmd[i], argv);
+    parse(command_line.cmd[i], argv);
     //printf("%s - -! ", *argv);
    
   
@@ -112,7 +112,7 @@ int piping(char* cmd){
 
   while(token != NULL){
     //printf("%s---", token);
-    strcpy(commend_line.cmd[index], token);
+    strcpy(command_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
   }
