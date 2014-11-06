@@ -37,6 +37,7 @@
 #define COMMAND_LENGTH 16
 #define MAX_COMMAND 64
 #define HISTORY_MAX_SIZE 100
+#define OUTPUT_SIZE 262144
 
 /*
  * Create a static char array that stores history
@@ -66,10 +67,6 @@ struct command
   char cmd[MAX_COMMAND][COMMAND_LENGTH+1];
 }command_line;
 
-struct output
-{
-  char output[MAX_COMMAND][COMMAND_LENGTH+1];
-}output_buffer;
 
 /*
  * Function that execute program by using fork() and execvp()
@@ -77,26 +74,59 @@ struct output
 
 void executeCommand(int num){
   int i;
+  int j;
   char *argv[64];
+  int pipefds[2*num];
+  //int commandCount = 0;
   //for (i = 0; i< num; i++){
   //printf("%s == ", command_line.cmd[i]);}
   //printf("%d", num);
+  for (j = 0; j < num;j++){
+    if (pipe(pipefds + j * 2) < 0){
+      perror("Pipe Problem");
+      exit(FAILURE);
+    }
+  }
+
   for (i = 0;i<num;i++){
     parse(command_line.cmd[i], argv);
     //printf("%s - -! ", *argv);
-   
   
 
 
-  int rc = fork();
+    int rc = fork();
       if (rc < 0){
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
       }else if (rc == 0){
+        if(i != 0){
+          if (dup2(pipefds[2*(i-1)], 0) < 0){
+            perror("Dup Problem !First");
+            exit(FAILURE);
+          }
+        }
+        if(i != num - 1){
+          if (dup2(pipefds[2*i+ 1], 1) < 0){
+            perror("Dup Problem !Last");
+            exit(FAILURE);
+          }
+        }
+        for (j = 0; j < 2*num; j++){
+          close(pipefds[j]);
+
+        }
         execvp(argv[0], argv);
-      }else{
+        //commandCount+=2;
+      }/*else{
         wait(NULL);
-      }
+      }*/
+      
+  }
+  for (j = 0; j < 2*num; j++){
+          close(pipefds[j]);
+  }
+  for (j= 0; j < 2*num;j++){
+    wait(0);
   }
 }
 
@@ -111,7 +141,7 @@ int piping(char* cmd){
   token = strtok(cmd, divide);
 
   while(token != NULL){
-    //printf("%s---", token);
+    //printf("%s\n", token);
     strcpy(command_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
@@ -123,7 +153,7 @@ int piping(char* cmd){
  * Function that does parsing job
  */
 
-void  parse(char *line, char **argv)
+void parse(char *line, char **argv)
 {
      while (*line != '\0') {       
           while (*line == ' ' || *line == '\t' || *line == '\n')
@@ -140,11 +170,10 @@ void  parse(char *line, char **argv)
 /*
  * Function that prints the history list
  */
-
 void printHistory(){
   int i;
   for (i = 0; i < history_count; i++){
-    printf("%d\t%s\n", i+1, history_list[i]);
+    printf("%d\t%s\n", i, history_list[i]);
   }
 }
 
