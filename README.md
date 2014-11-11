@@ -18,9 +18,8 @@ Shell Functionality
 <li>Tab Completion</li>
 </ol>
 <br />
-Install
+Compile
 ---------
-How to compile:
 gcc -Wall -lreadline -o JXYShell JXYShell.c
 <br />
 Run
