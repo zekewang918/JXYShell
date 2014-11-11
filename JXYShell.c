@@ -58,15 +58,14 @@ void history(char* command);
 void printHistory();
 void parse(char* line, char** argc);
 int isBuiltIn(char* cmd);
-void headTrim(char* str);
-void tailTrim(char* str);
+void headTrim(char* cmd);
+void tailTrim(char* cmd);
 
 /*
  * Struct a 2D-array that stores the commands
  */
 
-struct command
-{
+struct command {
   char cmd[MAX_COMMAND][COMMAND_LENGTH+1];
 }command_line;
 
@@ -75,7 +74,8 @@ struct command
  * Function that execute program by using fork() and execvp()
  */
 
-void executeCommand(int num){
+void executeCommand(int num)
+{
   int i;
   int j;
   char *argv[64];
@@ -84,14 +84,15 @@ void executeCommand(int num){
   //for (i = 0; i< num; i++){
   //printf("%s == ", command_line.cmd[i]);}
   //printf("%d", num);
-  for (j = 0; j < num;j++){
-    if (pipe(pipefds + j * 2) < 0){
+  for (j = 0; j < num; j++) {
+    if (pipe(pipefds + j * 2) < 0) {
       perror("Pipe Problem");
       exit(FAILURE);
     }
   }
 
-  for (i = 0;i<num;i++){
+  for (i = 0; i < num; i++)
+  {
     parse(command_line.cmd[i], argv);
     //printf("%s - -! ", *argv);
 
@@ -99,22 +100,21 @@ void executeCommand(int num){
       if (rc < 0){
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
-      }else if (rc == 0){
+      } else if (rc == 0) {
         if(i != 0){
-          if (dup2(pipefds[2*(i-1)], 0) < 0){
+          if (dup2(pipefds[2*(i-1)], 0) < 0) {
             perror("Dup Problem !First");
             exit(FAILURE);
           }
         }
-        if(i != num - 1){
-          if (dup2(pipefds[2*i+ 1], 1) < 0){
+        if(i != num - 1) {
+          if (dup2(pipefds[2*i+ 1], 1) < 0) {
             perror("Dup Problem !Last");
             exit(FAILURE);
           }
         }
-        for (j = 0; j < 2*num; j++){
+        for (j = 0; j < 2*num; j++) {
           close(pipefds[j]);
-
         }
         execvp(argv[0], argv);
         //commandCount+=2;
@@ -123,10 +123,12 @@ void executeCommand(int num){
       }*/
       
   }
-  for (j = 0; j < 2*num; j++){
+
+  for (j = 0; j < 2*num; j++) {
     close(pipefds[j]);
   }
-  for (j= 0; j < 2*num;j++){
+
+  for (j= 0; j < 2*num; j++) {
     wait(0);
   }
 }
@@ -135,13 +137,13 @@ void executeCommand(int num){
  * Function that implement piping by identify | signal
  */
 
-int piping(char* cmd){
+int piping(char* cmd) {
   char divide[2] = "|";
   char* token;
   int index = 0;
   token = strtok(cmd, divide);
 
-  while(token != NULL){
+  while(token != NULL) {
     //printf("%s\n", token);
     headTrim(token);
     tailTrim(token);
@@ -152,49 +154,45 @@ int piping(char* cmd){
   return index;
 }
 
-void headTrim(char *str)
-{
-  int length = strlen(str);
-  while (length > 0 && isspace(str[length-1])) {
+void headTrim(char *cmd) {
+  int length = strlen(cmd);
+  while (length > 0 && isspace(cmd[length-1])) {
     length--;
   }
-  str[length] = '\0';
+  cmd[length] = '\0';
 }
 
-void tailTrim(char *str)
-{
+void tailTrim(char *cmd) {
   int headSpace = 0;
-  int length = strlen(str)
-  while (str[headSpace] != '\0' && isspace(str[headSpace])) {
+  int length = strlen(cmd);
+  while (cmd[headSpace] != '\0' && isspace(cmd[headSpace])) {
     headSpace++;
   }
-  memmove(str, str+headSpace,length-headSpace+1);
+  memmove(cmd, cmd+headSpace,length-headSpace+1);
 }
 
 /*
  * Function that does parsing job
  */
 
-void parse(char *line, char **argv)
-{
-     while (*line != '\0') {       
-          while (*line == ' ' || *line == '\t' || *line == '\n')
-               *line++ = '\0';     
-            *argv++ = line;          
-          while (*line != '\0' && *line != ' ' && 
-                 *line != '\t' && *line != '\n') 
-            line++;   
-          //printf("%s",*argv);          
-     }
-     *argv = (char*) '\0';                
+void parse(char *line, char **argv) {
+  while (*line != '\0') {       
+    while (*line == ' ' || *line == '\t' || *line == '\n') 
+      *line++ = '\0';     
+    *argv++ = line;          
+    while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '\n') 
+      line++;   
+    //printf("%s",*argv);          
+  }
+   *argv = (char*) '\0';                
 }
 
 /*
  * Function that prints the history list
  */
-void printHistory(){
+void printHistory() {
   int i;
-  for (i = 0; i < history_count; i++){
+  for (i = 0; i < history_count; i++) {
     printf("%d\t%s\n", i, history_list[i]);
   }
 }
@@ -203,14 +201,14 @@ void printHistory(){
  * Function that stores history of user types
  */
 
-void history(char* command){
+void history(char* command) {
   int i;
 
-  if (history_count < HISTORY_MAX_SIZE){
+  if (history_count < HISTORY_MAX_SIZE) {
     history_list[history_count++] = strdup(command);
-  }else{
+  } else {
     free(history_list[0]);
-    for (i = 1; i < HISTORY_MAX_SIZE; i++){
+    for (i = 1; i < HISTORY_MAX_SIZE; i++) {
       history_list[i-1] = history_list[i];
     }
     strcpy(history_list[HISTORY_MAX_SIZE-1], command);
@@ -223,11 +221,11 @@ void history(char* command){
  * If it does then run it by functions provided in this program
  */
 
-int isBuiltIn(char* cmd){
-  if (strcmp(cmd, "history") == 0){
+int isBuiltIn(char* cmd) {
+  if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
-  }else if (strcmp(cmd, "exit") == 0){
+  }else if (strcmp(cmd, "exit") == 0) {
     exit(SUCCESS); 
   }
   return 1;
@@ -240,19 +238,16 @@ int isBuiltIn(char* cmd){
  */
 
 int 
-main(void)
-{
+main(void) {
   char* cmdLine;
   while(1){
     
     printf("JXYShell$ -");
     cmdLine = readline("> ");
     history(cmdLine);
-    if (isBuiltIn(cmdLine)){
+    if (isBuiltIn(cmdLine)) {
       executeCommand(piping(cmdLine));
     }
-
   }
   return SUCCESS;
 }
-
