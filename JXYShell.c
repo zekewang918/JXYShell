@@ -15,6 +15,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/wait.h>
+#include <ctype.h>
 
 /*
  * Define Staus of exit program
@@ -57,6 +58,8 @@ void history(char* command);
 void printHistory();
 void parse(char* line, char** argc);
 int isBuiltIn(char* cmd);
+void headTrim(char* str);
+void tailTrim(char* str);
 
 /*
  * Struct a 2D-array that stores the commands
@@ -91,8 +94,6 @@ void executeCommand(int num){
   for (i = 0;i<num;i++){
     parse(command_line.cmd[i], argv);
     //printf("%s - -! ", *argv);
-  
-
 
     int rc = fork();
       if (rc < 0){
@@ -123,7 +124,7 @@ void executeCommand(int num){
       
   }
   for (j = 0; j < 2*num; j++){
-          close(pipefds[j]);
+    close(pipefds[j]);
   }
   for (j= 0; j < 2*num;j++){
     wait(0);
@@ -142,11 +143,32 @@ int piping(char* cmd){
 
   while(token != NULL){
     //printf("%s\n", token);
+    headTrim(token);
+    tailTrim(token);
     strcpy(command_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
   }
   return index;
+}
+
+void headTrim(char *str)
+{
+  int length = strlen(str);
+  while (length > 0 && isspace(str[length-1])) {
+    length--;
+  }
+  str[length] = '\0';
+}
+
+void tailTrim(char *str)
+{
+  int headSpace = 0;
+  int length = strlen(str)
+  while (str[headSpace] != '\0' && isspace(str[headSpace])) {
+    headSpace++;
+  }
+  memmove(str, str+headSpace,length-headSpace+1);
 }
 
 /*
