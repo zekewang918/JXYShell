@@ -22,7 +22,6 @@
  * FAILURE: 1   
  * SUCCESS: 0
  */
-
 #define FAILURE 1
 #define SUCCESS 0
 
@@ -33,8 +32,6 @@
  * Max number of command: 64
  * History's size: 100
  */
-
-
 #define COMMAND_LENGTH 16
 #define MAX_COMMAND 64
 #define HISTORY_MAX_SIZE 100
@@ -44,27 +41,23 @@
  * Create a static char array that stores history
  * Create a int that stores the number of history 
  */
-
 static char* history_list[HISTORY_MAX_SIZE];
 static int history_count = 0;
 
 /*
  * Define that functions includes in this program
  */
-
 void executeCommand(int num);
 int piping(char* cmd);
 void history(char* command);
 void printHistory();
 void parse(char* line, char** argc);
 int isBuiltIn(char* cmd);
-void headTrim(char* cmd);
-void tailTrim(char* cmd);
+void trim(char* cmd);
 
 /*
  * Struct a 2D-array that stores the commands
  */
-
 struct command {
   char cmd[MAX_COMMAND][COMMAND_LENGTH+1];
 }command_line;
@@ -73,7 +66,6 @@ struct command {
 /*
  * Function that execute program by using fork() and execvp()
  */
-
 void executeCommand(int num)
 {
   int i;
@@ -136,7 +128,6 @@ void executeCommand(int num)
 /*
  * Function that implement piping by identify | signal
  */
-
 int piping(char* cmd) {
   char divide[2] = "|";
   char* token;
@@ -145,8 +136,7 @@ int piping(char* cmd) {
 
   while(token != NULL) {
     //printf("%s\n", token);
-    headTrim(token);
-    tailTrim(token);
+    trim(token);
     strcpy(command_line.cmd[index], token);
     index++;
     token = strtok(NULL, divide);
@@ -154,17 +144,17 @@ int piping(char* cmd) {
   return index;
 }
 
-void headTrim(char *cmd) {
+/*
+ * trim function trims head and tail spaces of each command
+ */
+void trim(char *cmd) {
   int length = strlen(cmd);
   while (length > 0 && isspace(cmd[length-1])) {
     length--;
   }
   cmd[length] = '\0';
-}
 
-void tailTrim(char *cmd) {
   int headSpace = 0;
-  int length = strlen(cmd);
   while (cmd[headSpace] != '\0' && isspace(cmd[headSpace])) {
     headSpace++;
   }
@@ -174,7 +164,6 @@ void tailTrim(char *cmd) {
 /*
  * Function that does parsing job
  */
-
 void parse(char *line, char **argv) {
   while (*line != '\0') {       
     while (*line == ' ' || *line == '\t' || *line == '\n') 
@@ -200,7 +189,6 @@ void printHistory() {
 /* 
  * Function that stores history of user types
  */
-
 void history(char* command) {
   int i;
 
@@ -220,7 +208,6 @@ void history(char* command) {
  * Checks if commands that user types is built in
  * If it does then run it by functions provided in this program
  */
-
 int isBuiltIn(char* cmd) {
   if (strcmp(cmd, "history") == 0) {
     printHistory();
@@ -236,7 +223,6 @@ int isBuiltIn(char* cmd) {
  * Function that simulate a shell that could do
  * simple jobs
  */
-
 int 
 main(void) {
   char* cmdLine;
