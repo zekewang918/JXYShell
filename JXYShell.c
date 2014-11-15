@@ -158,7 +158,7 @@ void trim(char *cmd) {
   while (cmd[headSpace] != '\0' && isspace(cmd[headSpace])) {
     headSpace++;
   }
-  memmove(cmd, cmd+headSpace,length-headSpace+1);
+  memmove(cmd, cmd,length-headSpace+1);
 }
 
 /*
