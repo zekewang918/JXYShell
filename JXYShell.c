@@ -86,7 +86,20 @@ void executeCommand(int num)
   for (i = 0; i < num; i++)
   {
     parse(command_line.cmd[i], argv);
-    //printf("%s - -! ", *argv);
+    //printf("%s - -! ", *argv); 
+    
+    if (*argv[0] == '!') {
+      char str[3];
+      strcpy(str, *argv);
+      if (strlen(str) == 2) {
+        int index = str[1]-'0';
+        if (index <= history_count)
+          *argv = history_list[history_count-index];
+      }
+    }
+
+    if (strcmp(*argv, "history") == 0)
+      printHistory();
 
     int rc = fork();
       if (rc < 0){
@@ -212,7 +225,7 @@ int isBuiltIn(char* cmd) {
   if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
-  }else if (strcmp(cmd, "exit") == 0) {
+  } else if (strcmp(cmd, "exit") == 0) {
     exit(SUCCESS); 
   }
   return 1;
@@ -226,11 +239,11 @@ int isBuiltIn(char* cmd) {
 int 
 main(void) {
   char* cmdLine;
-  while(1){
-    
+  while(1) {
     printf("JXYShell$ -");
     cmdLine = readline("> ");
-    history(cmdLine);
+    if (cmdLine[0] != '!')
+      history(cmdLine);
     if (isBuiltIn(cmdLine)) {
       executeCommand(piping(cmdLine));
     }
