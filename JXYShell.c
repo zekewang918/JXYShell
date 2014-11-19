@@ -125,8 +125,7 @@ void executeCommand(int num)
         //commandCount+=2;
       }/*else{
         wait(NULL);
-      }*/
-      
+      }*/ 
   }
 
   for (j = 0; j < 2*num; j++) {
@@ -242,7 +241,7 @@ main(void) {
   while(1) {
     printf("JXYShell$ -");
     cmdLine = readline("> ");
-    if (cmdLine[0] != '!')
+    if (cmdLine[0] != '!' || strcmp(cmdLine, "!") == 0)
       history(cmdLine);
     if (isBuiltIn(cmdLine)) {
       executeCommand(piping(cmdLine));
