@@ -17,8 +17,8 @@ Shell Functionality
 <li>Redirection</li>
 <li>Tab Completion</li>
 <ol>
-
 Additionals
+-----------
 <ol>
 <li>Repeat last 10 commands</li>
 </ol>
