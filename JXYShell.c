@@ -119,14 +119,28 @@ void executeCommand(int num) {
             argv[j] = NULL;
             fp = fopen(argv[j+1], "w+");
             if (dup2(fileno(fp), 1) < 0) {
-              perror("Dup Problem >");
+              perror("STDOUT WRITE ERROR!");
+              exit(FAILURE);
+            }
+          } else if (strcmp(argv[j], ">>") == 0) {
+            argv[j] = NULL;
+            fp = fopen(argv[j+1], "a");
+            if (dup2(fileno(fp), 1) < 0) {
+              perror("STDOUT APPEND ERROR!");
               exit(FAILURE);
             }
           } else if (strcmp(argv[j], "<") == 0) {
             argv[j] = NULL;
             fp = fopen(argv[j+1], "r");
             if (dup2(fileno(fp), 0) < 0) {
-              perror("Dup Problem <");
+              perror("STDIN READ ERROR!");
+              exit(FAILURE);
+            }
+          } else if (strcmp(argv[j], "<<") == 0) {
+            argv[j] = NULL;
+            fp = fopen(argv[j+1], "r");
+            if (dup2(fileno(fp), 0) < 0) {
+              perror("STDIN READ ERROR!");
               exit(FAILURE);
             }
           }
