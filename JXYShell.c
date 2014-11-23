@@ -124,6 +124,13 @@ void executeCommand(int num)
               perror("Dup Problem >");
               exit(FAILURE);
             }
+          } else if (strcmp(argv[j], "<") == 0) {
+            argv[j] = NULL;
+            fp = fopen(argv[j+1], "r");
+            if (dup2(fileno(fp), 0) < 0) {
+              perror("Dup Problem <");
+              exit(FAILURE);
+            }
           }
         }
 
@@ -131,10 +138,7 @@ void executeCommand(int num)
           close(pipefds[j]);
         }
         execvp(argv[0], argv);
-        //commandCount+=2;
-      }/*else{
-        wait(NULL);
-      }*/ 
+      }
   }
 
   for (j = 0; j < 2*num; j++) {
@@ -218,8 +222,8 @@ int parse(char *line, char **argv) {
       line++;           
     }
   }
-   *argv = (char*) '\0';
-   return num;           
+  *argv = (char*) '\0';
+  return num;           
 }
 
 /*
