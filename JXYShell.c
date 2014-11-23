@@ -66,8 +66,7 @@ struct command {
 /*
  * Function that execute program by using fork() and execvp()
  */
-void executeCommand(int num)
-{
+void executeCommand(int num) {
   FILE *fp;
   int i;
   int j;
@@ -81,8 +80,7 @@ void executeCommand(int num)
     }
   }
 
-  for (i = 0; i < num; i++)
-  {
+  for (i = 0; i < num; i++) {
     int numOfToken = parse(command_line.cmd[i], argv);
     
     if (*argv[0] == '!') {
@@ -99,11 +97,11 @@ void executeCommand(int num)
       printHistory();
 
     int rc = fork();
-      if (rc < 0){
+      if (rc < 0) {
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
       } else if (rc == 0) {
-        if(i != 0){
+        if(i != 0) {
           if (dup2(pipefds[2*(i-1)], 0) < 0) {
             perror("Dup Problem !First");
             exit(FAILURE);
@@ -160,7 +158,6 @@ int piping(char* cmd) {
   token = strtok(cmd, divide);
 
   while(token != NULL) {
-    //printf("%s\n", token);
     trim(token);
     strcpy(command_line.cmd[index], token);
     index++;
