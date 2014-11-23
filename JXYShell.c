@@ -51,7 +51,7 @@ void executeCommand(int num);
 int piping(char* cmd);
 void history(char* command);
 void printHistory();
-void parse(char* line, char** argc);
+int parse(char* line, char** argc);
 int isBuiltIn(char* cmd);
 void trim(char* cmd);
 
@@ -68,14 +68,12 @@ struct command {
  */
 void executeCommand(int num)
 {
+  FILE *fp;
   int i;
   int j;
   char *argv[64];
   int pipefds[2*num];
-  //int commandCount = 0;
-  //for (i = 0; i< num; i++){
-  //printf("%s == ", command_line.cmd[i]);}
-  //printf("%d", num);
+
   for (j = 0; j < num; j++) {
     if (pipe(pipefds + j * 2) < 0) {
       perror("Pipe Problem");
@@ -85,8 +83,7 @@ void executeCommand(int num)
 
   for (i = 0; i < num; i++)
   {
-    parse(command_line.cmd[i], argv);
-    //printf("%s - -! ", *argv); 
+    int numOfToken = parse(command_line.cmd[i], argv);
     
     if (*argv[0] == '!') {
       char str[3];
@@ -118,6 +115,18 @@ void executeCommand(int num)
             exit(FAILURE);
           }
         }
+
+        for (j = 0; j < numOfToken; j++) {
+          if (strcmp(argv[j], ">") == 0) {
+            argv[j] = NULL;
+            fp = fopen(argv[j+1], "w+");
+            if (dup2(fileno(fp), 1) < 0) {
+              perror("Dup Problem >");
+              exit(FAILURE);
+            }
+          }
+        }
+
         for (j = 0; j < 2*num; j++) {
           close(pipefds[j]);
         }
@@ -176,16 +185,41 @@ void trim(char *cmd) {
 /*
  * Function that does parsing job
  */
-void parse(char *line, char **argv) {
+int parse(char *line, char **argv) {
+  int num = 1;
   while (*line != '\0') {       
-    while (*line == ' ' || *line == '\t' || *line == '\n') 
-      *line++ = '\0';     
-    *argv++ = line;          
-    while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '\n') 
-      line++;   
-    //printf("%s",*argv);          
+    while (*line == ' ' || *line == '\t' || *line == '\n') {
+      *line++ = '\0';
+      num++;
+    } 
+    *argv++ = line++;          
+    while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '\n') {
+      switch(*line) {
+        case '>':
+          *argv++ = line++;
+          if (*line == '>') {
+            *argv++ = line++;
+            *argv++ = (char*)'\0';
+          }
+
+          while (*line == ' ' || *line == '\t') {
+            *line++ = '\0';
+            num++;
+            *argv++ = line;
+          }
+          break;
+        case '<':
+          *argv = (char*)'\0';
+          line++;
+          while (*line == ' ' || *line =='\t')
+            line++;
+          break;
+      }
+      line++;           
+    }
   }
-   *argv = (char*) '\0';                
+   *argv = (char*) '\0';
+   return num;           
 }
 
 /*
