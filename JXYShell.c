@@ -211,23 +211,14 @@ int parse(char *line, char **argv) {
     while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '\n') {
       switch(*line) {
         case '>':
-          *argv++ = line++;
-          if (*line == '>') {
-            *argv++ = line++;
-            *argv++ = (char*)'\0';
-          }
-
-          while (*line == ' ' || *line == '\t') {
-            *line++ = '\0';
-            num++;
-            *argv++ = line;
+          while (*line == ' ' || *line =='\t') {
+            line++;
           }
           break;
         case '<':
-          *argv = (char*)'\0';
-          line++;
-          while (*line == ' ' || *line =='\t')
+          while (*line == ' ' || *line =='\t') {
             line++;
+          }
           break;
       }
       line++;           
