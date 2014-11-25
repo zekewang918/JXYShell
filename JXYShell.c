@@ -222,7 +222,7 @@ int parse(char *line, char **argv) {
 void printHistory() {
   int i;
   for (i = 0; i < history_count; i++) {
-    printf("%d\t%s\n", i, history_list[i]);
+    printf("%d\t%s\n", i+1, history_list[i]);
   }
 }
 
@@ -263,8 +263,7 @@ int isBuiltIn(char* cmd) {
  * Function that simulate a shell that could do
  * simple jobs
  */
-int 
-main(void) {
+int main(void) {
   char* cmdLine;
   while(1) {
     printf("JXYShell$ -");
