@@ -253,7 +253,6 @@ void history(char* command) {
 int isBuiltIn(char* cmd) {
   char* argv[64];
   int num = parse(cmd, argv);
-  printf("%d", num);
   if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
@@ -272,9 +271,6 @@ int isBuiltIn(char* cmd) {
   return 1;
 }
 
-/*void directoryHelper(char* cmd){
-  while (cmd = '\0')
-}*/
 
 /*
  * Main Function
