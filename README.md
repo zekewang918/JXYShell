@@ -16,7 +16,9 @@ Shell Functionality
 <li>History</li>
 <li>Redirection</li>
 <li>Tab Completion</li>
+<li>Change Directory</li>
 </ol>
+</br>
 Additionals
 -----------
 <ol>
