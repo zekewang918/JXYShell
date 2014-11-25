@@ -114,7 +114,7 @@ void executeCommand(int num) {
           }
         }
 
-        for (j = 0; j < numOfToken; j++) {
+        for (j = 0; j < numOfToken-1; j++) {
           if (strcmp(argv[j], ">") == 0) {
             argv[j] = NULL;
             fp = fopen(argv[j+1], "w+");
