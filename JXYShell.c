@@ -282,19 +282,22 @@ void history(char* command) {
  * If it does then run it by functions provided in this program
  */
 int isBuiltIn(char* cmd) {
-  char* arg[64];
+  char commmand[64];
+  strcpy(commmand, cmd);
+  char* arg[COMMAND_LENGTH+1];
   int i = 1;
+  int num = parse(commmand, arg);
   if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
   } else if (strcmp(cmd, "exit") == 0) {
     exit(SUCCESS); 
-  } else if (strcmp(cmd, "cd") == 0) {
+  } else if (strcmp(cmd, "cd") == 0 && num == 1) {
     if (chdir(getenv("HOME")) == -1){
       printf("Home directory error!");
     }
     return 0;
-  } else if (cmd[0] == 'c' && cmd[1] == 'd'){
+  } else if (cmd[0] == 'c' && cmd[1] == 'd' && num > 1){
     while (arg[i] != NULL){
       if (chdir(arg[i])== -1){
       }
