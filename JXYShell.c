@@ -253,6 +253,7 @@ void history(char* command) {
 int isBuiltIn(char* cmd) {
   char* argv[64];
   int num = parse(cmd, argv);
+  int i = 1;
   if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
@@ -262,11 +263,15 @@ int isBuiltIn(char* cmd) {
     if (chdir(getenv("HOME")) == -1){
       printf("Home directory error!");
     }
-  }else if (cmd[0] == 'c' && cmd[1] == 'd' && num > 1){
-    printf("%s",argv[1]);
-    if (chdir(argv[1])== -1){
-      printf("Change directory error!");
+    return 0;
+  } else if (cmd[0] == 'c' && cmd[1] == 'd' && num > 1){
+    while (cmd[i] != NULL){
+      if (chdir(argv[i])== -1){
+      }
+      i++;
     }
+    i = 1;
+    return 0;
   }
   return 1;
 }
