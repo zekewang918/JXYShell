@@ -9,7 +9,7 @@ Team Member
 <li>Yang Yang</li>
 </ul>
 <br />
-Shell Functionality
+Shell Features
 -------------------
 <ol>
 <li>Piping</li>
@@ -18,11 +18,6 @@ Shell Functionality
 <li>Tab Completion</li>
 <li>Change Directory</li>
 <li>Joining</li>
-</ol>
-</br>
-Additionals
------------
-<ol>
 <li>Repeat last 10 commands</li>
 </ol>
 <br />
