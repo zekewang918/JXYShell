@@ -47,8 +47,9 @@ static int history_count = 0;
 /*
  * Define that functions includes in this program
  */
-void executeCommand(int num);
+void executeCommand(int num, int mode);
 int piping(char* cmd);
+int joining(char* cmd);
 void history(char* command);
 void printHistory();
 int parse(char* line, char** argc);
@@ -66,7 +67,7 @@ struct command {
 /*
  * Function that execute program by using fork() and execvp()
  */
-void executeCommand(int num) {
+void executeCommand(int num, int mode) {
   FILE *fp;
   int i;
   int j;
@@ -79,24 +80,24 @@ void executeCommand(int num) {
       exit(FAILURE);
     }
   }
-
-  for (i = 0; i < num; i++) {
-    int numOfToken = parse(command_line.cmd[i], argv);
-    
-    if (*argv[0] == '!') {
-      char str[3];
-      strcpy(str, *argv);
-      if (strlen(str) == 2) {
-        int index = str[1]-'0';
-        if (index <= history_count)
-          *argv = history_list[history_count-index];
+  if (mode == 1) {
+    for (i = 0; i < num; i++) {
+      int numOfToken = parse(command_line.cmd[i], argv);
+      
+      if (*argv[0] == '!') {
+        char str[3];
+        strcpy(str, *argv);
+        if (strlen(str) == 2) {
+          int index = str[1]-'0';
+          if (index <= history_count)
+            *argv = history_list[history_count-index];
+        }
       }
-    }
 
-    if (strcmp(*argv, "history") == 0)
-      printHistory();
+      if (strcmp(*argv, "history") == 0)
+        printHistory();
 
-    int rc = fork();
+      int rc = fork();
       if (rc < 0) {
         fprintf(stderr, "Fork Failed\n");
         exit(FAILURE);
@@ -151,6 +152,20 @@ void executeCommand(int num) {
         }
         execvp(argv[0], argv);
       }
+    }
+  } else {
+    for (i = 0; i < num; i++) {
+      parse(command_line.cmd[i], argv);
+      int rc = fork();
+      if (rc < 0) {
+        fprintf(stderr, "Fork Failed\n");
+        exit(FAILURE);
+      } else if (rc == 0) {
+        execvp(argv[0], argv);
+      } else {
+        wait(NULL);
+      }
+    }
   }
 
   for (j = 0; j < 2*num; j++) {
@@ -167,6 +182,24 @@ void executeCommand(int num) {
  */
 int piping(char* cmd) {
   char divide[2] = "|";
+  char* token;
+  int index = 0;
+  token = strtok(cmd, divide);
+
+  while(token != NULL) {
+    trim(token);
+    strcpy(command_line.cmd[index], token);
+    index++;
+    token = strtok(NULL, divide);
+  }
+  return index;
+}
+
+/*
+ * Function that implement piping by identify ; signal
+ */
+int joining(char* cmd) {
+  char divide[2] = ";";
   char* token;
   int index = 0;
   token = strtok(cmd, divide);
@@ -287,7 +320,10 @@ int main(void) {
     if (cmdLine[0] != '!' || strcmp(cmdLine, "!") == 0)
       history(cmdLine);
     if (isBuiltIn(cmdLine)) {
-      executeCommand(piping(cmdLine));
+      if (strstr(cmdLine, ";") != NULL)
+        executeCommand(joining(cmdLine), 0);
+      else
+        executeCommand(piping(cmdLine), 1);
     }
   }
   return SUCCESS;
