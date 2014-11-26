@@ -43,7 +43,6 @@
  */
 static char* history_list[HISTORY_MAX_SIZE];
 static int history_count = 0;
-char curDir[100];
 
 /*
  * Define that functions includes in this program
@@ -55,7 +54,6 @@ void printHistory();
 int parse(char* line, char** argc);
 int isBuiltIn(char* cmd);
 void trim(char* cmd);
-void directoryHelper(char* cmd);
 
 /*
  * Struct a 2D-array that stores the commands
@@ -251,22 +249,21 @@ void history(char* command) {
  * If it does then run it by functions provided in this program
  */
 int isBuiltIn(char* cmd) {
-  char* argv[64];
-  int num = parse(cmd, argv);
+  char* arg[64];
   int i = 1;
   if (strcmp(cmd, "history") == 0) {
     printHistory();
     return 0;
   } else if (strcmp(cmd, "exit") == 0) {
     exit(SUCCESS); 
-  } else if (strcmp(cmd, "cd") == 0 && num == 1) {
+  } else if (strcmp(cmd, "cd") == 0) {
     if (chdir(getenv("HOME")) == -1){
       printf("Home directory error!");
     }
     return 0;
-  } else if (cmd[0] == 'c' && cmd[1] == 'd' && num > 1){
-    while (cmd[i] != NULL){
-      if (chdir(argv[i])== -1){
+  } else if (cmd[0] == 'c' && cmd[1] == 'd'){
+    while (arg[i] != NULL){
+      if (chdir(arg[i])== -1){
       }
       i++;
     }
@@ -284,7 +281,6 @@ int isBuiltIn(char* cmd) {
  */
 int main(void) {
   char* cmdLine;
-  getcwd(curDir, 100);
   while(1) {
     printf("JXYShell$ -");
     cmdLine = readline("> ");
