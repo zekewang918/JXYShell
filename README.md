@@ -17,6 +17,7 @@ Shell Functionality
 <li>Redirection</li>
 <li>Tab Completion</li>
 <li>Change Directory</li>
+<li>Joining</li>
 </ol>
 </br>
 Additionals
